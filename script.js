@@ -50,6 +50,10 @@ async function detectObjects(video, model) {
                 prediction.bbox[0],
                 prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10
             );
+
+            if (prediction.class === 'person') {
+                hornOn();
+            }
         });
 
         requestAnimationFrame(detect);
@@ -167,6 +171,10 @@ function str2ab(str)
 function  logstatus(text){
 const navbarTitle = document.getElementById('navbarTitle');
 navbarTitle.textContent = text;
+}
+
+function hornOn(){
+    send("V");
 }
 
 document.addEventListener('DOMContentLoaded', function () {
