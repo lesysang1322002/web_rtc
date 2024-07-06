@@ -1,7 +1,23 @@
+let currentStream;
+let video = document.getElementById('video');
+let canvas = document.getElementById('canvas');
+let switchCameraButton = document.getElementById('switch-camera');
+let useFrontCamera = true;
+let model;
+
 async function setupCamera() {
-    const video = document.getElementById('video');
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+    }
+
+    const constraints = {
+        video: {
+            facingMode: useFrontCamera ? 'user' : 'environment'
+        }
+    };
+
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = currentStream;
 
     return new Promise((resolve) => {
         video.onloadedmetadata = () => {
@@ -11,7 +27,6 @@ async function setupCamera() {
 }
 
 async function detectObjects(video, model) {
-    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     video.width = video.videoWidth;
     video.height = video.videoHeight;
@@ -44,11 +59,17 @@ async function detectObjects(video, model) {
 }
 
 async function main() {
-    const video = await setupCamera();
+    video = await setupCamera();
     video.play();
 
-    const model = await cocoSsd.load();
+    model = await cocoSsd.load();
     detectObjects(video, model);
 }
+
+switchCameraButton.addEventListener('click', async () => {
+    useFrontCamera = !useFrontCamera;
+    await setupCamera();
+    detectObjects(video, model);
+});
 
 main();
