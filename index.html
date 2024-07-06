@@ -3,14 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Sign Recognition</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Leanbot Recognition</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Traffic Sign Recognition</h1>
+    <nav class="navbar" style="padding: 0px 0px;">
+        <button class="btn btn-primary-scan" id="toggleButton" onclick="toggleFunction()" style="padding: 0px 0px">
+            <img src="ble_logo.png" alt="Scan Icon"><span id="buttonText"><strong>Scan</strong></span>  
+        </button>
+        <a class="navbar-brand center-text" href="#" id="navbarTitle" style="color: rgb(218, 79, 79)"><strong>SCAN to connect</strong></a>
+        <div class="info-container">
+            <button id="infoButton"><i class="fas fa-info-circle"></i></button>
+            <div class="info-content" id="infoContent">
+                <h6><strong>Leanbot BLE Control</strong></h6>
+                <h6><strong>Device: JDY-33</strong></h6>
+                <h6>Service UUID: 0000ffe0-0000-1000-8000-00805f9b34fb</h6>
+                <h6>Characteristic UUID: 0000ffe1-0000-1000-8000-00805f9b34fb</h6>
+                <footer class="text-center py-2" style="color: rgb(218, 79, 79)">
+                    &copy; DTT
+                </footer>
+            </div>
+        </div>
+    </nav>
+
+    <hr>
+
+    <div class = "videoA">
     <video id="video" width="640" height="480" autoplay></video>
     <canvas id="canvas" width="640" height="480"></canvas>
-    <button id="switch-camera">Switch Camera</button>
+    <button class = "button" id="switch-camera">Switch Camera</button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     <script src="script.js"></script>

@@ -1,16 +1,5 @@
 body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-}
-
-h1 {
-    margin-bottom: 20px;
 }
 
 video, canvas {
@@ -18,8 +7,88 @@ video, canvas {
     margin-bottom: 10px;
 }
 
-button {
-    padding: 10px 20px;
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#navbarTitle {
+    margin-right:32px;
+    /* margin: 0 auto; */
     font-size: 16px;
+}
+.btn-primary-scan {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color:  #ffffff!important; 
+    background-color: #2c5f85 !important; 
+    border-color:  #000000 !important;
+    width: 80px; /* Đảm bảo kích thước tối đa không vượt quá kích thước của phần tử cha */
+    height: auto; 
+}
+.btn-primary-scan img {
+    padding-bottom: 2px;
+    width: 22px; /* Đặt kích thước chiều rộng mong muốn */
+    height: auto;
+}
+#infoButton {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0 0 px;
+    background: #ffffff;
+    color: rgb(38, 15, 15);
+    border: none;
+    font-size: 17px;
     cursor: pointer;
+}
+.info-content {
+    display: none;
+    position: absolute;
+    top: 5px; 
+    left: 5px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    white-space: pre-line; /* Hiển thị thông tin theo hàng dòng */
+    line-height: 0.1;
+}
+.alert-info {
+    background-color: #17a2b8;
+    color: #fff;
+}
+body h6 {
+    font-size: 12px;
+}
+footer {
+    background-color: #343a40;
+    color: #fff;
+}
+.center-text {
+    text-align: center;
+    color: #333; /* Màu sắc văn bản tùy chọn */
+    font-size: 24px; /* Kích thước font tùy chọn */
+}
+
+.button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color:  #ffffff!important; 
+    background-color: #2c5f85 !important; 
+    border-color:  #000000 !important;
+    width: 200px; /* Đảm bảo kích thước tối đa không vượt quá kích thước của phần tử cha */
+    height: auto; 
+    border-radius: 5px;
+}
+
+.videoA{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
