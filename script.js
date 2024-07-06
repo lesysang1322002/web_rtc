@@ -1,6 +1,5 @@
 let currentStream;
 let video = document.getElementById('video');
-let canvas = document.getElementById('canvas');
 let switchCameraButton = document.getElementById('switch-camera');
 let useFrontCamera = true;
 let model;
@@ -27,17 +26,15 @@ async function setupCamera() {
 }
 
 async function detectObjects(video, model) {
-    const ctx = canvas.getContext('2d');
+    const ctx = video.getContext('2d');
     video.width = video.videoWidth;
     video.height = video.videoHeight;
-
-    canvas.width = video.width;
-    canvas.height = video.height;
 
     async function detect() {
         const predictions = await model.detect(video);
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, video.width, video.height);
+        ctx.drawImage(video, 0, 0, video.width, video.height);
         predictions.forEach(prediction => {
             ctx.beginPath();
             ctx.rect(...prediction.bbox);
