@@ -78,23 +78,23 @@ switchCameraButton.addEventListener('click', async () => {
 
 main();
 
-var bleService = '0000ffe0-0000-1000-8000-00805f9b34fb';
-var bleCharacteristic = '0000ffe1-0000-1000-8000-00805f9b34fb';
-var gattCharacteristic;
-var bluetoothDeviceDetected;
+const bleService = '0000ffe0-0000-1000-8000-00805f9b34fb';
+const bleCharacteristic = '0000ffe1-0000-1000-8000-00805f9b34fb';
+let gattCharacteristic;
+let dev;
+
 function isWebBluetoothEnabled() {
     if (!navigator.bluetooth) {
-    console.log('Web Bluetooth API is not available in this browser!');
-    // log('Web Bluetooth API is not available in this browser!');
-    return false
+        console.log('Web Bluetooth API is not available in this browser!');
+        return false;
     }
-
-    return true
+    return true;
 }
 
 const button = document.getElementById("toggleButton");
-function toggleFunction() {
+button.addEventListener('click', toggleFunction);
 
+function toggleFunction() {
     if (button.innerText == "Scan") {
         requestBluetoothDevice();
     } else {
@@ -105,82 +105,86 @@ function toggleFunction() {
 }
 
 function requestBluetoothDevice() {
-    if(isWebBluetoothEnabled){
-logstatus('Finding...');
-navigator.bluetooth.requestDevice({
-    filters: [{
-        services: ['0000ffe0-0000-1000-8000-00805f9b34fb'] }] 
-    })         
-.then(device => {
-    dev=device;
-    logstatus("Connect to " + dev.name);
-    console.log('Đang kết nối với', dev);
-    return device.gatt.connect();
-})
-.then(server => {
-        console.log('Getting GATT Service...');
-        logstatus('Getting Service...');
-        return server.getPrimaryService(bleService);
-    })
-    .then(service => {
-        console.log('Getting GATT Characteristic...');
-        logstatus('Geting Characteristic...');
-        return service.getCharacteristic(bleCharacteristic);
-    })
-    .then(characteristic => {
-        logstatus(dev.name);
-        document.getElementById("buttonText").innerText = "Rescan";
-    gattCharacteristic = characteristic
-    // gattCharacteristic.addEventListener('characteristicvaluechanged', handleChangedValue)
-    return gattCharacteristic.startNotifications()
-})
-.catch(error => {
-    if (error instanceof DOMException && error.name === 'NotFoundError' && error.message === 'User cancelled the requestDevice() chooser.') {
-    console.log("Người dùng đã hủy yêu cầu kết nối thiết bị.");
-    logstatus("Scan to connect");
-    } else {
-    console.log("Không thể kết nối với thiết bị: " + error);
-    logstatus("ERROR");
+    if (isWebBluetoothEnabled()) {
+        logstatus('Finding...');
+        navigator.bluetooth.requestDevice({
+            filters: [{
+                services: [bleService]
+            }]
+        })
+        .then(device => {
+            dev = device;
+            logstatus("Connect to " + dev.name);
+            console.log('Đang kết nối với', dev);
+            return device.gatt.connect();
+        })
+        .then(server => {
+            console.log('Getting GATT Service...');
+            logstatus('Getting Service...');
+            return server.getPrimaryService(bleService);
+        })
+        .then(service => {
+            console.log('Getting GATT Characteristic...');
+            logstatus('Getting Characteristic...');
+            return service.getCharacteristic(bleCharacteristic);
+        })
+        .then(characteristic => {
+            logstatus(dev.name);
+            document.getElementById("buttonText").innerText = "Rescan";
+            gattCharacteristic = characteristic;
+            return gattCharacteristic.startNotifications();
+        })
+        .catch(error => {
+            if (error instanceof DOMException && error.name === 'NotFoundError' && error.message === 'User cancelled the requestDevice() chooser.') {
+                console.log("Người dùng đã hủy yêu cầu kết nối thiết bị.");
+                logstatus("Scan to connect");
+            } else {
+                console.log("Không thể kết nối với thiết bị: " + error);
+                logstatus("ERROR");
+            }
+        });
     }
-    });
-}}
-
-function disconnect()
-{
-    logstatus("Scan to connect");
-    console.log("Đã ngắt kết nối với: " + dev.name);
-    return dev.gatt.disconnect();
 }
 
-function send(data)
-{
-    console.log("You -> " + data + "\n");
-    gattCharacteristic.writeValue(str2ab(data+"\n"));
+function disconnect() {
+    if (dev && dev.gatt.connected) {
+        logstatus("Scan to connect");
+        console.log("Đã ngắt kết nối với: " + dev.name);
+        return dev.gatt.disconnect();
+    }
 }
 
-function str2ab(str)
-{
-    var buf = new ArrayBuffer(str.length);
-    var bufView = new Uint8Array(buf);
-    for (var i = 0, l = str.length; i < l; i++) {
+function send(data) {
+    if (gattCharacteristic) {
+        console.log("You -> " + data);
+        gattCharacteristic.writeValue(str2ab(data + "\n"));
+    } else {
+        console.log("GATT Characteristic not found.");
+    }
+}
+
+function str2ab(str) {
+    const buf = new ArrayBuffer(str.length);
+    const bufView = new Uint8Array(buf);
+    for (let i = 0; i < str.length; i++) {
         bufView[i] = str.charCodeAt(i);
     }
     return buf;
 }
 
-function  logstatus(text){
-const navbarTitle = document.getElementById('navbarTitle');
-navbarTitle.textContent = text;
+function logstatus(text) {
+    const navbarTitle = document.getElementById('navbarTitle');
+    navbarTitle.textContent = text;
 }
 
-function hornOn(){
+function hornOn() {
     send("V");
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    var infoButton = document.getElementById('infoButton');
-    var infoContent = document.getElementById('infoContent');
-  
+    const infoButton = document.getElementById('infoButton');
+    const infoContent = document.getElementById('infoContent');
+
     infoButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Ngăn chặn sự kiện click lan sang các phần tử cha
         if (infoContent.style.display === 'block') {
@@ -189,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
             infoContent.style.display = 'block';
         }
     });
-  
+
     document.addEventListener('click', function () {
         infoContent.style.display = 'none';
     });
