@@ -51,10 +51,11 @@ async function detectObjects(video, model) {
                 prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10
             );
 
-            if (prediction.class === 'person') {
+            // Kiểm tra nếu đối tượng là "person" thì gọi hàm hornOn() nếu BLE đã kết nối
+            if (prediction.class === 'person' && gattCharacteristic) {
                 hornOn();
             }
-            else {
+            else if (prediction.class !== 'person' && gattCharacteristic) {
                 hornOff();
             }
         });
@@ -98,7 +99,7 @@ const button = document.getElementById("toggleButton");
 button.addEventListener('click', toggleFunction);
 
 function toggleFunction() {
-    if (button.innerText == "Scan") {
+    if (button.innerText === "Scan") {
         requestBluetoothDevice();
     } else {
         document.getElementById("buttonText").innerText = "Scan";
@@ -111,9 +112,7 @@ function requestBluetoothDevice() {
     if (isWebBluetoothEnabled()) {
         logstatus('Finding...');
         navigator.bluetooth.requestDevice({
-            filters: [{
-                services: [bleService]
-            }]
+            filters: [{ services: [bleService] }]
         })
         .then(device => {
             dev = device;
@@ -153,7 +152,7 @@ function disconnect() {
     if (dev && dev.gatt.connected) {
         logstatus("Scan to connect");
         console.log("Đã ngắt kết nối với: " + dev.name);
-        return dev.gatt.disconnect();
+        dev.gatt.disconnect();
     }
 }
 
