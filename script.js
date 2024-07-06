@@ -54,6 +54,9 @@ async function detectObjects(video, model) {
             if (prediction.class === 'person') {
                 hornOn();
             }
+            else {
+                hornOff();
+            }
         });
 
         requestAnimationFrame(detect);
@@ -179,6 +182,10 @@ function logstatus(text) {
 
 function hornOn() {
     send("V");
+}
+
+function hornOff() {
+    send("v");
 }
 
 document.addEventListener('DOMContentLoaded', function () {
