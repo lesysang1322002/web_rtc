@@ -55,6 +55,9 @@ async function detectObjects(video, model) {
             if (prediction.class === 'person' && gattCharacteristic) {
                 hornOn();
             }
+            if (prediction.class === 'book' && gattCharacteristic) {
+                Stop();
+            }
             else if (prediction.class !== 'person' && gattCharacteristic) {
                 hornOff();
             }
@@ -185,6 +188,10 @@ function hornOn() {
 
 function hornOff() {
     send("v");
+}
+
+function Stop() {
+    send("S");
 }
 
 document.addEventListener('DOMContentLoaded', function () {
