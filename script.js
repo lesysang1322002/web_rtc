@@ -26,6 +26,8 @@ async function setupCamera() {
     });
 }
 
+let lastSentTime = 0;  // ngoài hàm detectObjects
+
 async function detectObjects(video, model) {
     const ctx = canvas.getContext('2d');
     video.width = video.videoWidth;
@@ -43,6 +45,7 @@ async function detectObjects(video, model) {
             ctx.rect(...prediction.bbox);
             ctx.lineWidth = 2;
             ctx.strokeStyle = 'red';
+            ctx.font = '25px sans-serif';
             ctx.fillStyle = 'red';
             ctx.stroke();
             ctx.fillText(
@@ -51,15 +54,11 @@ async function detectObjects(video, model) {
                 prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10
             );
 
-            // Kiểm tra nếu đối tượng là "person" thì gọi hàm hornOn() nếu BLE đã kết nối
-            if (prediction.class === 'person' && gattCharacteristic) {
-                hornOn();
-            }
-            if (prediction.class === 'book' && gattCharacteristic) {
-                Stop();
-            }
-            else if (prediction.class !== 'person' && gattCharacteristic) {
-                hornOff();
+            // Send data to Bluetooth device
+            const now = Date.now();
+            if (now - lastSentTime >= 3000) {
+                send(prediction.class);
+                lastSentTime = now;
             }
         });
 
@@ -159,12 +158,24 @@ function disconnect() {
     }
 }
 
-function send(data) {
-    if (gattCharacteristic) {
-        console.log("You -> " + data);
-        gattCharacteristic.writeValue(str2ab(data + "\n"));
-    } else {
+async function send(data) {
+    if (!gattCharacteristic) {
         console.log("GATT Characteristic not found.");
+        return;
+    }
+    data += '\n';  // Append newline character to data
+    console.log("You -> " + data);
+    let start = 0;
+    const dataLength = data.length;
+    while (start < dataLength) {
+        let subStr = data.substring(start, start + 16);
+        try {
+            await gattCharacteristic.writeValue(str2ab(subStr));
+        } catch (error) {
+            console.error("Error writing to characteristic:", error);
+            break;
+        }
+        start += 16;
     }
 }
 
@@ -180,18 +191,6 @@ function str2ab(str) {
 function logstatus(text) {
     const navbarTitle = document.getElementById('navbarTitle');
     navbarTitle.textContent = text;
-}
-
-function hornOn() {
-    send("V");
-}
-
-function hornOff() {
-    send("v");
-}
-
-function Stop() {
-    send("S");
 }
 
 document.addEventListener('DOMContentLoaded', function () {
